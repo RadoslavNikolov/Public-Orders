@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
+﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Public_Orders.Models;
-using Public_Orders.Services;
 
 namespace Public_Orders
 {
+    using PublicOrders.Data;
+    using PublicOrders.Data.Models;
+    using PublicOrders.Data.UnitOfWork;
+    using PublicOrders.Services;
+
     public class Startup
     {
         public Startup(IHostingEnvironment env)
@@ -47,16 +46,25 @@ namespace Public_Orders
 
             services.AddEntityFramework()
                 .AddSqlServer()
-                .AddDbContext<ApplicationDbContext>(options =>
+                .AddDbContext<PublicOrdersDbContext>(options =>
                     options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddIdentity<User, IdentityRole>(o => 
+                {
+                    // configure identity options
+                    o.Password.RequireDigit = false;
+                    o.Password.RequireLowercase = false;
+                    o.Password.RequireUppercase = false;
+                    o.Password.RequireNonLetterOrDigit = false; ;
+                    o.Password.RequiredLength = 3;
+                })
+                .AddEntityFrameworkStores<PublicOrdersDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddMvc();
 
             // Add application services.
+            services.AddScoped<IPublicOrdersData, PublicOrdersData>();
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
         }
@@ -85,7 +93,7 @@ namespace Public_Orders
                     using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
                         .CreateScope())
                     {
-                        serviceScope.ServiceProvider.GetService<ApplicationDbContext>()
+                        serviceScope.ServiceProvider.GetService<PublicOrdersDbContext>()
                              .Database.Migrate();
                     }
                 }
@@ -106,7 +114,8 @@ namespace Public_Orders
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}",
+                    defaults: new {controller = "Home", action = "Index"});
             });
         }
 

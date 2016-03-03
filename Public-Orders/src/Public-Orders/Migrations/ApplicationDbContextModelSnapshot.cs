@@ -1,22 +1,19 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Migrations;
-using Public_Orders.Models;
+using PublicOrders.Data;
 
-namespace Public_Orders.Migrations
+namespace PublicOrders.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(PublicOrdersDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-beta8")
+                .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityRole", b =>
@@ -49,7 +46,8 @@ namespace Public_Orders.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<string>("RoleId");
+                    b.Property<string>("RoleId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -65,7 +63,8 @@ namespace Public_Orders.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -80,7 +79,8 @@ namespace Public_Orders.Migrations
 
                     b.Property<string>("ProviderDisplayName");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired();
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -98,7 +98,32 @@ namespace Public_Orders.Migrations
                     b.HasAnnotation("Relational:TableName", "AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("Public_Orders.Models.ApplicationUser", b =>
+            modelBuilder.Entity("PublicOrders.Data.Models.Blog", b =>
+                {
+                    b.Property<int>("BlogId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Url")
+                        .IsRequired();
+
+                    b.HasKey("BlogId");
+                });
+
+            modelBuilder.Entity("PublicOrders.Data.Models.Post", b =>
+                {
+                    b.Property<int>("PostId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BlogId");
+
+                    b.Property<string>("Content");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("PostId");
+                });
+
+            modelBuilder.Entity("PublicOrders.Data.Models.User", b =>
                 {
                     b.Property<string>("Id");
 
@@ -155,14 +180,14 @@ namespace Public_Orders.Migrations
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Public_Orders.Models.ApplicationUser")
+                    b.HasOne("PublicOrders.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Public_Orders.Models.ApplicationUser")
+                    b.HasOne("PublicOrders.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
@@ -173,9 +198,16 @@ namespace Public_Orders.Migrations
                         .WithMany()
                         .HasForeignKey("RoleId");
 
-                    b.HasOne("Public_Orders.Models.ApplicationUser")
+                    b.HasOne("PublicOrders.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("PublicOrders.Data.Models.Post", b =>
+                {
+                    b.HasOne("PublicOrders.Data.Models.Blog")
+                        .WithMany()
+                        .HasForeignKey("BlogId");
                 });
         }
     }

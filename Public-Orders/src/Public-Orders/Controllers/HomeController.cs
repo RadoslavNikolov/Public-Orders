@@ -1,35 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Mvc;
-
-namespace Public_Orders.Controllers
+﻿namespace PublicOrders.Controllers
 {
-    public class HomeController : Controller
+    using Data.UnitOfWork;
+    using Microsoft.AspNet.Mvc;
+
+    public class HomeController : BaseController
     {
+        public HomeController(IPublicOrdersData data)
+            : base(data)
+        {
+            
+        }
         public IActionResult Index()
         {
-            return View();
+            return this.View();
         }
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
+            this.ViewData["Message"] = "Your application description page.";
 
-            return View();
+            return this.View();
         }
 
         public IActionResult Contact()
         {
-            ViewData["Message"] = "Your contact page.";
+            this.ViewData["Message"] = "Your contact page.";
 
-            return View();
+            return this.View();
         }
 
         public IActionResult Error()
         {
-            return View();
+            return this.View();
         }
     }
 }

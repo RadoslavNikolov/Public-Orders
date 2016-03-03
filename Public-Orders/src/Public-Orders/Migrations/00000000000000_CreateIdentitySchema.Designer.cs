@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Infrastructure;
-using Microsoft.Data.Entity.Metadata;
-using Microsoft.Data.Entity.Migrations;
-using Public_Orders.Models;
-
-namespace Public_Orders.Migrations
+namespace PublicOrders.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    using System;
+    using Data;
+    using Microsoft.Data.Entity;
+    using Microsoft.Data.Entity.Infrastructure;
+    using Microsoft.Data.Entity.Metadata;
+    using Microsoft.Data.Entity.Migrations;
+
+    [DbContext(typeof(PublicOrdersDbContext))]
     [Migration("00000000000000_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
