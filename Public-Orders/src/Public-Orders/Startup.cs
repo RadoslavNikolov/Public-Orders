@@ -1,8 +1,6 @@
 ﻿namespace PublicOrders
 {
     using System;
-    using Autofac;
-    using Autofac.Extensions.DependencyInjection;
     using Microsoft.AspNet.Builder;
     using Microsoft.AspNet.Hosting;
     using Microsoft.AspNet.Identity.EntityFramework;
@@ -13,7 +11,6 @@
     using PublicOrders.Data;
     using PublicOrders.Data.Models;
     using PublicOrders.Data.UnitOfWork;
-    using PublicOrders.Infrastructure.Autofac;
     using PublicOrders.Services;
 
     public class Startup
@@ -42,7 +39,7 @@
         public IConfigurationRoot Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
             services.AddApplicationInsightsTelemetry(this.Configuration);
@@ -71,14 +68,6 @@
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
             services.AddScoped<IPublicOrdersData, PublicOrdersData>();
-
-            //Autofac config
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new AutofacModule());
-            builder.Populate(services);
-            var container = builder.Build();
-
-            return container.Resolve<IServiceProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

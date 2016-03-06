@@ -10,16 +10,16 @@
 
     public class PublicOrdersData : IPublicOrdersData
     {
-        private readonly DbContext dbContext;
+        private readonly PublicOrdersDbContext dbContext;
         private readonly IDictionary<Type, object> repositories;
         private IUserStore<User> userStore;
 
-        public PublicOrdersData()
-            : this(new PublicOrdersDbContext())
-        {
-        }
+        //public PublicOrdersData()
+        //    : this(new PublicOrdersDbContext())
+        //{
+        //}
 
-        public PublicOrdersData(DbContext dbContext)
+        public PublicOrdersData(PublicOrdersDbContext dbContext)
         {
             //Out of the box DI in Startup.cs do not allow to make DI with parametrizied constructor
             //Because of that "dbContext" is null. And thah is my workaround
