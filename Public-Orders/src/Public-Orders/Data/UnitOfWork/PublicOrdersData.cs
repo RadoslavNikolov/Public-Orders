@@ -23,10 +23,10 @@
         {
             //Out of the box DI in Startup.cs do not allow to make DI with parametrizied constructor
             //Because of that "dbContext" is null. And thah is my workaround
-            if (dbContext == null)
-            {
-                dbContext = new PublicOrdersDbContext();
-            }
+            //if (dbContext == null)
+            //{
+            //    dbContext = new PublicOrdersDbContext();
+            //}
 
             this.dbContext = dbContext;
             this.repositories = new Dictionary<Type, object>();

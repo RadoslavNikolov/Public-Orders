@@ -1,18 +1,19 @@
-﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Data.Entity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
-namespace Public_Orders
+﻿namespace PublicOrders
 {
     using System;
     using Autofac;
+    using Autofac.Extensions.DependencyInjection;
+    using Microsoft.AspNet.Builder;
+    using Microsoft.AspNet.Hosting;
+    using Microsoft.AspNet.Identity.EntityFramework;
+    using Microsoft.Data.Entity;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using PublicOrders.Data;
     using PublicOrders.Data.Models;
     using PublicOrders.Data.UnitOfWork;
+    using PublicOrders.Infrastructure.Autofac;
     using PublicOrders.Services;
 
     public class Startup
@@ -35,21 +36,21 @@ namespace Public_Orders
             }
 
             builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
+            this.Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddApplicationInsightsTelemetry(Configuration);
+            services.AddApplicationInsightsTelemetry(this.Configuration);
 
             services.AddEntityFramework()
                 .AddSqlServer()
                 .AddDbContext<PublicOrdersDbContext>(options =>
-                    options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+                    options.UseSqlServer(this.Configuration["Data:DefaultConnection:ConnectionString"]));
 
             services.AddIdentity<User, IdentityRole>(o => 
                 {
@@ -71,22 +72,19 @@ namespace Public_Orders
 
             services.AddScoped<IPublicOrdersData, PublicOrdersData>();
 
-            //var builder = new ContainerBuilder();
-            //builder.RegisterModule<DataModule>();
-            //builder.RegisterType<PublicOrdersData>()
-            //    .As<IPublicOrdersData>()
-            //    .InstancePerDependency();
-            //builder.Populate(services);
+            //Autofac config
+            var builder = new ContainerBuilder();
+            builder.RegisterModule(new AutofacModule());
+            builder.Populate(services);
+            var container = builder.Build();
 
-            //var container = builder.Build();
-
-            //return container.Resolve<IServiceProvider>();
+            return container.Resolve<IServiceProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddConsole(this.Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             app.UseApplicationInsightsRequestTelemetry();
