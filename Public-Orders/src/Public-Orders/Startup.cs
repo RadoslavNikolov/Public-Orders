@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Public_Orders
 {
+    using System;
+    using Autofac;
     using PublicOrders.Data;
     using PublicOrders.Data.Models;
     using PublicOrders.Data.UnitOfWork;
@@ -64,9 +66,21 @@ namespace Public_Orders
             services.AddMvc();
 
             // Add application services.
-            services.AddScoped<IPublicOrdersData, PublicOrdersData>();
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.AddScoped<IPublicOrdersData, PublicOrdersData>();
+
+            //var builder = new ContainerBuilder();
+            //builder.RegisterModule<DataModule>();
+            //builder.RegisterType<PublicOrdersData>()
+            //    .As<IPublicOrdersData>()
+            //    .InstancePerDependency();
+            //builder.Populate(services);
+
+            //var container = builder.Build();
+
+            //return container.Resolve<IServiceProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -114,8 +128,7 @@ namespace Public_Orders
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}",
-                    defaults: new {controller = "Home", action = "Index"});
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
 

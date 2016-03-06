@@ -1,10 +1,12 @@
 namespace PublicOrders.Controllers
 {
     using System.Linq;
+    using Microsoft.AspNet.Authorization;
     using Microsoft.AspNet.Mvc;
     using PublicOrders.Data.Models;
     using PublicOrders.Data.UnitOfWork;
 
+    [Authorize]
     public class BlogsController : BaseController
     {
 
@@ -14,12 +16,14 @@ namespace PublicOrders.Controllers
         }
 
         // GET: Blogs
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View(this.PublicOrdersData.Blogs.All().ToList());
         }
 
         // GET: Blogs/Details/5
+        [AllowAnonymous]
         public IActionResult Details(int? id)
         {
             if (id == null)
