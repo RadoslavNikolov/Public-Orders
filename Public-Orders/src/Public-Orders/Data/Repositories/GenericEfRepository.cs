@@ -7,19 +7,16 @@
 
     public class GenericEfRepository<TEntity> : IRepository<TEntity> where TEntity : class 
     {
-        protected DbContext dbContext;
+        protected DbContext DbContext;
         protected DbSet<TEntity> entitySet;
 
         public GenericEfRepository(DbContext dbContext)
         {
-            this.dbContext = dbContext;
+            this.DbContext = dbContext;
             this.entitySet = dbContext.Set<TEntity>();
         }
 
-        public DbSet<TEntity> EntitySet
-        {
-            get { return this.entitySet; }
-        }
+        public DbSet<TEntity> EntitySet => this.entitySet;
 
         public IQueryable<TEntity> All()
         {
@@ -56,13 +53,13 @@
 
         public void SaveChanges()
         {
-            this.dbContext.SaveChanges();
+            this.DbContext.SaveChanges();
         }
 
 
         private void ChangeState(TEntity entity, EntityState state)
         {
-            var entry = this.dbContext.Entry(entity);
+            var entry = this.DbContext.Entry(entity);
 
             if (entry.State == EntityState.Detached)
             {

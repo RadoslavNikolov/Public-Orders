@@ -32,33 +32,17 @@
             this.repositories = new Dictionary<Type, object>();
         }
 
-        public IRepository<User> Users
-        {
-            get { return this.GetRepository<User>(); }
-        }
+        public IRepository<User> Users => this.GetRepository<User>();
 
-        public IRepository<Blog> Blogs
-        {
-            get { return this.GetRepository<Blog>(); }
-        }
+        public IRepository<Blog> Blogs => this.GetRepository<Blog>();
 
-        public IRepository<Post> Posts
-        {
-            get { return this.GetRepository<Post>(); }
-        }
+        public IRepository<Post> Posts => this.GetRepository<Post>();
 
-        public IUserStore<User> UserStore
-        {
-            get
-            {
-                if (this.userStore == null)
-                {
-                    this.userStore = new UserStore<User>(this.dbContext);
-                }
+        public IRepository<Tag> Tags => this.GetRepository<Tag>();
 
-                return this.userStore;
-            }
-        }
+        public IRepository<PostTag> PostTags => this.GetRepository<PostTag>();
+
+        public IUserStore<User> UserStore => this.userStore ?? (this.userStore = new UserStore<User>(this.dbContext));
 
         public void SaveChanges()
         {

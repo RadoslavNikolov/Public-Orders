@@ -11,6 +11,10 @@
 
         IRepository<Post> Posts { get; }
 
+        IRepository<Tag> Tags { get; }
+        
+        IRepository<PostTag> PostTags { get; }  
+
         void SaveChanges();
     }
 }

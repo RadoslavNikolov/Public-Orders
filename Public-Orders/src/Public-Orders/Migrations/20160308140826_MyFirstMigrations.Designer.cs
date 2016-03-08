@@ -8,9 +8,10 @@ using PublicOrders.Data;
 namespace PublicOrders.Migrations
 {
     [DbContext(typeof(PublicOrdersDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160308140826_MyFirstMigrations")]
+    partial class MyFirstMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")
