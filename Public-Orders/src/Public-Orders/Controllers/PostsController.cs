@@ -1,8 +1,8 @@
 namespace PublicOrders.Controllers
 {
     using System.Linq;
-    using Data.Models;
-    using Data.UnitOfWork;
+    using Data.AppData.Models;
+    using Data.AppData.UnitOfWork;
     using Microsoft.AspNet.Mvc;
     using Microsoft.AspNet.Mvc.Rendering;
     using Microsoft.Data.Entity;

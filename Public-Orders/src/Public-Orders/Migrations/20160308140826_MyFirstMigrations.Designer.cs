@@ -7,6 +7,8 @@ using PublicOrders.Data;
 
 namespace PublicOrders.Migrations
 {
+    using Data.AppData;
+
     [DbContext(typeof(PublicOrdersDbContext))]
     [Migration("20160308140826_MyFirstMigrations")]
     partial class MyFirstMigrations

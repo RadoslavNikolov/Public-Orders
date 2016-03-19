@@ -3,8 +3,8 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Data.Models;
-    using Data.UnitOfWork;
+    using Data.AppData.Models;
+    using Data.AppData.UnitOfWork;
     using Microsoft.AspNet.Authorization;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Mvc;
@@ -104,7 +104,7 @@
         {
             if (this.ModelState.IsValid)
             {
-                var user = new User { UserName = model.Username, Email = model.Email };
+                var user = new User { UserName = model.Username, Email = model.Email, Egn = model.Egn, Age = model.Age};
                 var result = await this._userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

@@ -1,4 +1,4 @@
-﻿namespace PublicOrders.Data.Repositories
+﻿namespace PublicOrders.Data.AppData.Repositories
 {
     using System.Linq;
 

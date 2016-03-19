@@ -1,6 +1,5 @@
-﻿namespace PublicOrders.Data.Repositories
+﻿namespace PublicOrders.Data.AppData.Repositories
 {
-    using System.Collections.Generic;
     using System.Linq;
     using Infrastructure.MyExtensions;
     using Microsoft.Data.Entity;

@@ -1,4 +1,4 @@
-﻿namespace PublicOrders.Data.Models
+﻿namespace PublicOrders.Data.AppData.Models
 {
     public class PostTag
     {

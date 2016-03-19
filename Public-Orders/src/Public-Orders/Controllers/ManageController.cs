@@ -3,8 +3,8 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Data.Models;
-    using Data.UnitOfWork;
+    using Data.AppData.Models;
+    using Data.AppData.UnitOfWork;
     using Microsoft.AspNet.Authorization;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Mvc;

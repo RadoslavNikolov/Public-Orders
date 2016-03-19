@@ -1,7 +1,7 @@
-﻿namespace PublicOrders.Data.UnitOfWork
+﻿namespace PublicOrders.Data.AppData.UnitOfWork
 {
-    using Models;
-    using Repositories;
+    using AppData.Models;
+    using AppData.Repositories;
 
     public interface IPublicOrdersData
     {

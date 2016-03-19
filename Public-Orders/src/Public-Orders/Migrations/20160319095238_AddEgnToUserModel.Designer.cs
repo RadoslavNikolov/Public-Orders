@@ -3,15 +3,13 @@ using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Migrations;
-using PublicOrders.Data;
+using PublicOrders.Data.AppData;
 
 namespace PublicOrders.Migrations
 {
-    using Data.AppData;
-
     [DbContext(typeof(PublicOrdersDbContext))]
-    [Migration("20160303144037_MyFirstMigration")]
-    partial class MyFirstMigration
+    [Migration("20160319095238_AddEgnToUserModel")]
+    partial class AddEgnToUserModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -101,7 +99,7 @@ namespace PublicOrders.Migrations
                     b.HasAnnotation("Relational:TableName", "AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("PublicOrders.Data.Models.Blog", b =>
+            modelBuilder.Entity("PublicOrders.Data.AppData.Models.Blog", b =>
                 {
                     b.Property<int>("BlogId")
                         .ValueGeneratedOnAdd();
@@ -112,7 +110,7 @@ namespace PublicOrders.Migrations
                     b.HasKey("BlogId");
                 });
 
-            modelBuilder.Entity("PublicOrders.Data.Models.Post", b =>
+            modelBuilder.Entity("PublicOrders.Data.AppData.Models.Post", b =>
                 {
                     b.Property<int>("PostId")
                         .ValueGeneratedOnAdd();
@@ -126,7 +124,26 @@ namespace PublicOrders.Migrations
                     b.HasKey("PostId");
                 });
 
-            modelBuilder.Entity("PublicOrders.Data.Models.User", b =>
+            modelBuilder.Entity("PublicOrders.Data.AppData.Models.PostTag", b =>
+                {
+                    b.Property<int>("PostId");
+
+                    b.Property<int>("TagId");
+
+                    b.HasKey("PostId", "TagId");
+                });
+
+            modelBuilder.Entity("PublicOrders.Data.AppData.Models.Tag", b =>
+                {
+                    b.Property<int>("TagId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("TagId");
+                });
+
+            modelBuilder.Entity("PublicOrders.Data.AppData.Models.User", b =>
                 {
                     b.Property<string>("Id");
 
@@ -134,6 +151,8 @@ namespace PublicOrders.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
+
+                    b.Property<int>("Egn");
 
                     b.Property<string>("Email")
                         .HasAnnotation("MaxLength", 256);
@@ -183,14 +202,14 @@ namespace PublicOrders.Migrations
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("PublicOrders.Data.Models.User")
+                    b.HasOne("PublicOrders.Data.AppData.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("PublicOrders.Data.Models.User")
+                    b.HasOne("PublicOrders.Data.AppData.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
@@ -201,16 +220,27 @@ namespace PublicOrders.Migrations
                         .WithMany()
                         .HasForeignKey("RoleId");
 
-                    b.HasOne("PublicOrders.Data.Models.User")
+                    b.HasOne("PublicOrders.Data.AppData.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("PublicOrders.Data.Models.Post", b =>
+            modelBuilder.Entity("PublicOrders.Data.AppData.Models.Post", b =>
                 {
-                    b.HasOne("PublicOrders.Data.Models.Blog")
+                    b.HasOne("PublicOrders.Data.AppData.Models.Blog")
                         .WithMany()
                         .HasForeignKey("BlogId");
+                });
+
+            modelBuilder.Entity("PublicOrders.Data.AppData.Models.PostTag", b =>
+                {
+                    b.HasOne("PublicOrders.Data.AppData.Models.Post")
+                        .WithMany()
+                        .HasForeignKey("PostId");
+
+                    b.HasOne("PublicOrders.Data.AppData.Models.Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId");
                 });
         }
     }

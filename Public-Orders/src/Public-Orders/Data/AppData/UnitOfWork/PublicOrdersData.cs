@@ -1,12 +1,11 @@
-﻿namespace PublicOrders.Data.UnitOfWork
+﻿namespace PublicOrders.Data.AppData.UnitOfWork
 {
     using System;
     using System.Collections.Generic;
+    using AppData.Models;
+    using AppData.Repositories;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
-    using Microsoft.Data.Entity;
-    using Models;
-    using Repositories;
 
     public class PublicOrdersData : IPublicOrdersData
     {

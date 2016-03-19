@@ -1,10 +1,10 @@
 namespace PublicOrders.Controllers
 {
     using System.Linq;
+    using Data.AppData.Models;
+    using Data.AppData.UnitOfWork;
     using Microsoft.AspNet.Authorization;
     using Microsoft.AspNet.Mvc;
-    using PublicOrders.Data.Models;
-    using PublicOrders.Data.UnitOfWork;
 
     [Authorize]
     public class BlogsController : BaseController

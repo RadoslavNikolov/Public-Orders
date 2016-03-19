@@ -1,7 +1,7 @@
 ﻿namespace PublicOrders.Controllers
 {
     using System.Linq;
-    using Data.UnitOfWork;
+    using Data.AppData.UnitOfWork;
     using Microsoft.AspNet.Mvc;
 
     public class HomeController : BaseController

@@ -2,6 +2,7 @@ namespace PublicOrders.Migrations
 {
     using System;
     using Data;
+    using Data.AppData;
     using Microsoft.Data.Entity;
     using Microsoft.Data.Entity.Infrastructure;
     using Microsoft.Data.Entity.Metadata;

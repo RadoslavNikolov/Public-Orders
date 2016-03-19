@@ -1,6 +1,10 @@
 ﻿namespace PublicOrders
 {
     using System;
+    using Data.AppData;
+    using Data.AppData.Models;
+    using Data.AppData.UnitOfWork;
+    using Data.BisData;
     using Microsoft.AspNet.Builder;
     using Microsoft.AspNet.Hosting;
     using Microsoft.AspNet.Identity.EntityFramework;
@@ -9,8 +13,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using PublicOrders.Data;
-    using PublicOrders.Data.Models;
-    using PublicOrders.Data.UnitOfWork;
     using PublicOrders.Services;
 
     public class Startup
@@ -47,7 +49,16 @@
             services.AddEntityFramework()
                 .AddSqlServer()
                 .AddDbContext<PublicOrdersDbContext>(options =>
-                    options.UseSqlServer(this.Configuration["Data:DefaultConnection:ConnectionString"]));
+                {
+                    options.UseSqlServer(
+                        this.Configuration[
+                            "Data:AppDefaultConnection:ConnectionString"
+                            ]);
+                })
+                .AddDbContext<BisDbContext>(options =>
+                {
+                    options.UseSqlServer(this.Configuration["Data:BisDefaultConnection:ConnectionString"]);
+                });
 
             services.AddIdentity<User, IdentityRole>(o => 
                 {

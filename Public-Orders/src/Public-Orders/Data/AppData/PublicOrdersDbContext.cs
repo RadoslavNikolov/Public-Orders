@@ -1,9 +1,9 @@
-﻿namespace PublicOrders.Data
+﻿namespace PublicOrders.Data.AppData
 {
-    using Data.Models;
+    using AppData.Models;
+    using AppData.Repositories;
     using Microsoft.AspNet.Identity.EntityFramework;
     using Microsoft.Data.Entity;
-    using Repositories;
 
     public class PublicOrdersDbContext : IdentityDbContext<User>, IPublicOrderDbContext
     {
