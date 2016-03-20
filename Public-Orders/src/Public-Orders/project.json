@@ -7,6 +7,7 @@
 
   "dependencies": {
     "EntityFramework.Commands": "7.0.0-rc1-final",
+    "EntityFramework.Core": "7.0.0-rc1-final",
     "EntityFramework.MicrosoftSqlServer": "7.0.0-rc1-final",
     "EntityFramework.MicrosoftSqlServer.Design": "7.0.0-rc1-final",
     "Microsoft.ApplicationInsights.AspNet": "1.0.0-rc1",
@@ -26,7 +27,8 @@
     "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final"
+    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final",
+    "Sendgrid": "6.3.4"
   },
 
   "commands": {
@@ -37,9 +39,9 @@
   "frameworks": {
     "dnx451": {
       "dependencies": {
-      }
-    },
+      },
     "dnxcore50": { }
+    }
   },
 
   "exclude": [

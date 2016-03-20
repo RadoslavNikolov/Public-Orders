@@ -1,12 +1,15 @@
 namespace PublicOrders.Controllers
 {
     using System.Linq;
+    using System.Threading.Tasks;
     using Data.AppData.Models;
     using Data.AppData.UnitOfWork;
     using Microsoft.AspNet.Authorization;
     using Microsoft.AspNet.Mvc;
+    using Microsoft.Data.Entity;
 
     [Authorize]
+    [RequireHttps]
     public class BlogsController : BaseController
     {
 
@@ -19,7 +22,7 @@ namespace PublicOrders.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            return View(this.PublicOrdersData.Blogs.All().ToList());
+            return View(this.PublicOrdersData.Blogs.All().ToListAsync());
         }
 
         // GET: Blogs/Details/5
@@ -31,7 +34,7 @@ namespace PublicOrders.Controllers
                 return HttpNotFound();
             }
 
-            Blog blog = this.PublicOrdersData.Blogs.All().Single(m => m.BlogId == id);
+            Task<Blog> blog = this.PublicOrdersData.Blogs.All().SingleAsync(m => m.BlogId == id);
             if (blog == null)
             {
                 return HttpNotFound();
@@ -68,7 +71,7 @@ namespace PublicOrders.Controllers
                 return HttpNotFound();
             }
 
-            Blog blog = this.PublicOrdersData.Blogs.All().Single(m => m.BlogId == id);
+            Task<Blog> blog = this.PublicOrdersData.Blogs.All().SingleAsync(m => m.BlogId == id);
             if (blog == null)
             {
                 return HttpNotFound();
@@ -99,7 +102,7 @@ namespace PublicOrders.Controllers
                 return HttpNotFound();
             }
 
-            Blog blog = this.PublicOrdersData.Blogs.All().Single(m => m.BlogId == id);
+            Task<Blog> blog = this.PublicOrdersData.Blogs.All().SingleAsync(m => m.BlogId == id);
             if (blog == null)
             {
                 return HttpNotFound();
@@ -113,7 +116,7 @@ namespace PublicOrders.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Blog blog = this.PublicOrdersData.Blogs.All().Single(m => m.BlogId == id);
+            Task<Blog> blog = this.PublicOrdersData.Blogs.All().SingleAsync(m => m.BlogId == id);
             this.PublicOrdersData.Blogs.Remove(blog);
             this.PublicOrdersData.SaveChanges();
             return RedirectToAction("Index");

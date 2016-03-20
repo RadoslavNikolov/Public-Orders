@@ -1,6 +1,7 @@
 ﻿namespace PublicOrders
 {
     using System;
+    using System.Configuration;
     using Data.AppData;
     using Data.AppData.Models;
     using Data.AppData.UnitOfWork;
@@ -77,7 +78,7 @@
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-
+            services.Configure<AuthMessageSenderOptions>(Configuration);
             services.AddScoped<IPublicOrdersData, PublicOrdersData>();
         }
 

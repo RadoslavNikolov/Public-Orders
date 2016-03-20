@@ -1,12 +1,16 @@
 namespace PublicOrders.Controllers
 {
     using System.Linq;
+    using System.Threading.Tasks;
     using Data.AppData.Models;
     using Data.AppData.UnitOfWork;
+    using Microsoft.AspNet.Authorization;
     using Microsoft.AspNet.Mvc;
     using Microsoft.AspNet.Mvc.Rendering;
     using Microsoft.Data.Entity;
 
+    [Authorize]
+    [RequireHttps]
     public class PostsController : BaseController
     {
         public PostsController(IPublicOrdersData data)
@@ -17,8 +21,8 @@ namespace PublicOrders.Controllers
         // GET: Posts
         public IActionResult Index()
         {
-            var publicOrdersDbContext = this.PublicOrdersData.Posts.All().Include(p => p.Blog);
-            return this.View(publicOrdersDbContext.ToList());
+            var posts = this.PublicOrdersData.Posts.All().Include(p => p.Blog);
+            return this.View(posts.ToListAsync());
         }
 
         // GET: Posts/Details/5
@@ -29,7 +33,7 @@ namespace PublicOrders.Controllers
                 return this.HttpNotFound();
             }
 
-            Post post = this.PublicOrdersData.Posts.All().Single(m => m.PostId == id);
+            Task<Post> post = this.PublicOrdersData.Posts.All().SingleAsync(m => m.PostId == id);
             if (post == null)
             {
                 return this.HttpNotFound();
@@ -68,12 +72,12 @@ namespace PublicOrders.Controllers
                 return this.HttpNotFound();
             }
 
-            Post post = this.PublicOrdersData.Posts.All().Single(m => m.PostId == id);
+            Task<Post> post = this.PublicOrdersData.Posts.All().SingleAsync(m => m.PostId == id);
             if (post == null)
             {
                 return this.HttpNotFound();
             }
-            this.ViewData["BlogId"] = new SelectList(this.PublicOrdersData.Blogs.All(), "BlogId", "Url", post.BlogId);
+            this.ViewData["BlogId"] = new SelectList(this.PublicOrdersData.Blogs.All(), "BlogId", "Url", post.Result.BlogId);
             return this.View(post);
         }
 
@@ -101,7 +105,7 @@ namespace PublicOrders.Controllers
                 return this.HttpNotFound();
             }
 
-            Post post = this.PublicOrdersData.Posts.All().Single(m => m.PostId == id);
+            Task<Post> post = this.PublicOrdersData.Posts.All().SingleAsync(m => m.PostId == id);
             if (post == null)
             {
                 return this.HttpNotFound();
@@ -115,7 +119,7 @@ namespace PublicOrders.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Post post = this.PublicOrdersData.Posts.All().Single(m => m.PostId == id);
+            Task<Post> post = this.PublicOrdersData.Posts.All().SingleAsync(m => m.PostId == id);
             this.PublicOrdersData.Posts.Remove(post);
             this.PublicOrdersData.SaveChanges();
             return this.RedirectToAction("Index");

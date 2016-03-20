@@ -1,7 +1,10 @@
 ﻿namespace PublicOrders.Controllers
 {
+    using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Security.Claims;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Data.AppData.Models;
     using Data.AppData.UnitOfWork;
@@ -14,6 +17,7 @@
     using ViewModels.Account;
 
     [Authorize]
+    [RequireHttps]
     public class AccountController : BaseController
     {
         private readonly UserManager<User> _userManager;
@@ -58,6 +62,17 @@
             this.ViewData["ReturnUrl"] = returnUrl;
             if (this.ModelState.IsValid)
             {
+                // Require the user to have a confirmed email before they can log on.
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user != null)
+                {
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError(string.Empty, "You must have a confirmed email to log in.");
+                        return View(model);
+                    }
+                }
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await this._signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: false);
@@ -104,26 +119,39 @@
         {
             if (this.ModelState.IsValid)
             {
+
+
+                Debug.WriteLine("Register: Creating new User");
                 var user = new User { UserName = model.Username, Email = model.Email, Egn = model.Egn, Age = model.Age};
+
+                Debug.WriteLine(string.Format("Register: New User = {0}", user.UserName));
                 var result = await this._userManager.CreateAsync(user, model.Password);
+
+                Debug.WriteLine(string.Format("Register: Registration = {0}", result.Succeeded));
                 if (result.Succeeded)
                 {
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                     // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
-                    await this._signInManager.SignInAsync(user, isPersistent: false);
-                    this._logger.LogInformation(3, "User created a new account with password.");
+                    Debug.WriteLine("Register: Sending Email Code");
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    Debug.WriteLine(string.Format("Register: Email for code {0} is {1}", model.Email, code));
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
+                            "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
+
                     return this.RedirectToAction(nameof(HomeController.Index), "Home");
                 }
+
                 this.AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
             return this.View(model);
         }
+
+       
 
         //
         // POST: /Account/LogOff
@@ -230,16 +258,25 @@
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
+            Debug.WriteLine("ConfirmEmail: Checking for userId = " + userId);
             if (userId == null || code == null)
             {
+                Debug.WriteLine("ConfirmEmail: Invalid Parameters");
                 return this.View("Error");
             }
+
+            Debug.WriteLine("ConfirmEmail: Looking for userId");
             var user = await this._userManager.FindByIdAsync(userId);
             if (user == null)
             {
+                Debug.WriteLine("ConfirmEmail: Could not find user");
                 return this.View("Error");
             }
+
+            Debug.WriteLine("ConfirmEmail: Found user - checking confirmation code");
             var result = await this._userManager.ConfirmEmailAsync(user, code);
+
+            Debug.WriteLine("ConfirmEmail: Code Confirmation = " + result.Succeeded);
             return this.View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 

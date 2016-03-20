@@ -1,17 +1,20 @@
-using System.Linq;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Data.Entity;
-using PublicOrders.Data.BisData;
-using PublicOrders.Data.BisData.Models;
+
 
 namespace PublicOrders.Controllers
 {
-    using System.Collections;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
     using Data.AppData.UnitOfWork;
     using Microsoft.AspNet.Authorization;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using Microsoft.AspNet.Mvc;
+    using Microsoft.AspNet.Mvc.Rendering;
+    using Microsoft.Data.Entity;
+    using PublicOrders.Data.BisData.Models;
 
     [Authorize]
+    [RequireHttps]
     public class ExaminationsController : BaseController
     {
         public ExaminationsController(IPublicOrdersData data) 
@@ -22,12 +25,19 @@ namespace PublicOrders.Controllers
         // GET: Examinations
         public IActionResult Index()
         {
-            var userExaminations = this.BisDbContext.Examinations
-                .Where(e => e.Patient.Egn == this.UserProfile.Egn)
+            var userExaminations = this.UserProfileAsync.ContinueWith(loadTask =>
+            {
+                return this.BisDbContext.Examinations
+                .Where(e => e.Patient.Egn == loadTask.Result.Egn)
                 .Include(e => e.Doctor)
-                .Include(e => e.Patient);
+                .Include(e => e.Patient).ToList();
+            }).Result;
+            //var userExaminations = this.BisDbContext.Examinations
+            //    .Where(e => e.Patient.Egn == this.UserProfile.Egn)
+            //    .Include(e => e.Doctor)
+            //    .Include(e => e.Patient).ToList();
 
-            return View(userExaminations.ToList());
+            return View(userExaminations);
         }
 
         // GET: Examinations/Details/5
@@ -38,20 +48,21 @@ namespace PublicOrders.Controllers
                 return HttpNotFound();
             }
 
-            Examination examination = this.BisDbContext.Examinations.Single(m => m.Id == id);
-            if (examination == null)
+            var examination = this.BisDbContext.Examinations.SingleAsync(m => m.Id == id);
+
+            if (examination.IsFaulted)
             {
                 return HttpNotFound();
             }
 
-            return View(examination);
+            return View(examination.Result);
         }
 
         // GET: Examinations/Create
         public IActionResult Create()
         {
             ViewData["DoctorId"] = new SelectList(this.BisDbContext.Doctors, "Id", "FirstName");
-            ViewData["PatientId"] = new SelectList(this.BisDbContext.Patients.Where(p => p.Egn == this.UserProfile.Egn), "Id", "FirstName");
+            ViewData["PatientId"] = new SelectList(this.BisDbContext.Patients.Where(p => p.Egn == this.UserProfileAsync.Result.Egn), "Id", "FirstName");
             return View();
         }
 
@@ -86,14 +97,16 @@ namespace PublicOrders.Controllers
                 return HttpNotFound();
             }
 
-            Examination examination = this.BisDbContext.Examinations.Single(m => m.Id == id);
-            if (examination == null)
+            Task<Examination> examination = this.BisDbContext.Examinations.SingleAsync(m => m.Id == id);
+
+            if (examination.IsFaulted)
             {
                 return HttpNotFound();
             }
-            ViewData["DoctorId"] = new SelectList(this.BisDbContext.Doctors, "Id", "Doctors", examination.DoctorId);
-            ViewData["PatientId"] = new SelectList(this.BisDbContext.Patients.Where(p => p.Egn == this.UserProfile.Egn), "Id", "Patients", examination.PatientId);
-            return View(examination);
+
+            ViewData["DoctorId"] = new SelectList(this.BisDbContext.Doctors, "Id", "Doctors", examination.Result.DoctorId);
+            ViewData["PatientId"] = new SelectList(this.BisDbContext.Patients.Where(p => p.Egn == this.UserProfileAsync.Result.Egn), "Id", "Patients", examination.Result.PatientId);
+            return View(examination.Result);
         }
 
         // POST: Examinations/Edit/5
@@ -110,7 +123,7 @@ namespace PublicOrders.Controllers
                     return RedirectToAction("Index");
                 }
                 ViewData["DoctorId"] = new SelectList(this.BisDbContext.Doctors, "Id", "Doctors", examination.DoctorId);
-                ViewData["PatientId"] = new SelectList(this.BisDbContext.Patients.Where(p => p.Egn == this.UserProfile.Egn), "Id", "Patients", examination.PatientId);
+                ViewData["PatientId"] = new SelectList(this.BisDbContext.Patients.Where(p => p.Egn == this.UserProfileAsync.Result.Egn), "Id", "Patients", examination.PatientId);
                 return View(examination);
             }
             catch (System.Exception)
@@ -130,13 +143,14 @@ namespace PublicOrders.Controllers
                     return HttpNotFound();
                 }
 
-                Examination examination = this.BisDbContext.Examinations.Single(m => m.Id == id);
-                if (examination == null)
+                Task<Examination> examination = this.BisDbContext.Examinations.SingleAsync(m => m.Id == id);
+
+                if (examination.IsFaulted)
                 {
                     return HttpNotFound();
                 }
 
-                return View(examination);
+                return View(examination.Result);
             }
             catch (System.Exception)
             {
@@ -149,7 +163,7 @@ namespace PublicOrders.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Examination examination = this.BisDbContext.Examinations.Single(m => m.Id == id);
+            Examination examination = this.BisDbContext.Examinations.SingleAsync(m => m.Id == id).Result;
             this.BisDbContext.Examinations.Remove(examination);
             this.BisDbContext.SaveChanges();
             return RedirectToAction("Index");

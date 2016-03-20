@@ -13,6 +13,7 @@
     using ViewModels.Manage;
 
     [Authorize]
+    [RequireHttps]
     public class ManageController : BaseController
     {
         private readonly UserManager<User> _userManager;

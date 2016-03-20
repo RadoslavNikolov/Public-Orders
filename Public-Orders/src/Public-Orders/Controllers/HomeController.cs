@@ -4,6 +4,7 @@
     using Data.AppData.UnitOfWork;
     using Microsoft.AspNet.Mvc;
 
+    [RequireHttps]
     public class HomeController : BaseController
     {
         public HomeController(IPublicOrdersData data)

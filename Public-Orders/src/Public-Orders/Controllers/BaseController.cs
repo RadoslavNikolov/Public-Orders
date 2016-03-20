@@ -4,14 +4,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
-    using System.Threading;
-    using Data.AppData;
+    using System.Threading.Tasks;
     using Data.AppData.Models;
     using Data.AppData.UnitOfWork;
     using Data.BisData;
     using Infrastructure;
-    using Microsoft.AspNet.Identity;
-    using Microsoft.AspNet.Identity.EntityFramework;
     using Microsoft.AspNet.Mvc;
     using Microsoft.Data.Entity;
 
@@ -27,12 +24,24 @@
         [FromServices]
         public BisDbContext BisDbContext { get; set; }
 
-        public User UserProfile => this.GetCurrentLoggedUser();
-
-        private User GetCurrentLoggedUser()
+        public Task<User> UserProfileAsync
         {
-            var user = this.PublicOrdersData.Users.All().FirstOrDefault(u => u.Id == this.HttpContext.User.GetUserId());
-            return user;
+            get
+            {
+                var user = this.PublicOrdersData.Users.All().FirstOrDefaultAsync(u => u.Id == this.HttpContext.User.GetUserId());
+
+                return user;
+            }
+        }
+
+        public User UserProfile
+        {
+            get
+            {
+                var user = this.PublicOrdersData.Users.All().FirstOrDefault(u => u.Id == this.HttpContext.User.GetUserId());
+
+                return user;
+            }
         }
 
         protected bool IsAdmin()
